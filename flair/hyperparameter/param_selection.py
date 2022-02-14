@@ -93,9 +93,7 @@ class ParamSelector(object):
 
             model = self._set_up_model(params)
 
-            training_params = {
-                key: params[key] for key in params if key in TRAINING_PARAMETERS
-            }
+            training_params = {key: params[key] for key in params if key in TRAINING_PARAMETERS}
 
             trainer: ModelTrainer = ModelTrainer(model, self.corpus)
 
@@ -110,9 +108,7 @@ class ParamSelector(object):
             if self.optimization_value == OptimizationValue.DEV_LOSS:
                 curr_scores = result["dev_loss_history"][-3:]
             else:
-                curr_scores = list(
-                    map(lambda s: 1 - s, result["dev_score_history"][-3:])
-                )
+                curr_scores = list(map(lambda s: 1 - s, result["dev_score_history"][-3:]))
 
             score = sum(curr_scores) / float(len(curr_scores))
             var = np.var(curr_scores)
@@ -152,9 +148,7 @@ class ParamSelector(object):
 
     def optimize(self, space: SearchSpace, max_evals=100):
         search_space = space.search_space
-        best = fmin(
-            self._objective, search_space, algo=tpe.suggest, max_evals=max_evals
-        )
+        best = fmin(self._objective, search_space, algo=tpe.suggest, max_evals=max_evals)
 
         log_line(log)
         log.info("Optimizing parameter configuration done.")
@@ -204,9 +198,7 @@ class SequenceTaggerParamSelector(ParamSelector):
         self.tag_dictionary = self.corpus.make_label_dictionary(self.tag_type)
 
     def _set_up_model(self, params: dict):
-        sequence_tagger_params = {
-            key: params[key] for key in params if key in SEQUENCE_TAGGER_PARAMETERS
-        }
+        sequence_tagger_params = {key: params[key] for key in params if key in SEQUENCE_TAGGER_PARAMETERS}
 
         tagger: SequenceTagger = SequenceTagger(
             tag_dictionary=self.tag_dictionary,
@@ -256,9 +248,7 @@ class TextClassifierParamSelector(ParamSelector):
         self.label_dictionary = self.corpus.make_label_dictionary(self.label_type)
 
     def _set_up_model(self, params: dict):
-        embdding_params = {
-            key: params[key] for key in params if key in DOCUMENT_EMBEDDING_PARAMETERS
-        }
+        embdding_params = {key: params[key] for key in params if key in DOCUMENT_EMBEDDING_PARAMETERS}
 
         if self.document_embedding_type == "lstm":
             document_embedding = DocumentRNNEmbeddings(rnn_type="LSTM", **embdding_params)
